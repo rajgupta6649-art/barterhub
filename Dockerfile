@@ -8,7 +8,7 @@ WORKDIR /app
 COPY backend/ .
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Create uploads directory
 RUN mkdir -p uploads logs
