@@ -1,0 +1,40 @@
+# Render.com Auto-Deploy Configuration
+# This file tells Render how to deploy your BarterHub application
+
+services:
+  # Backend API Service
+  - type: web
+    name: barterhub-backend
+    env: node
+    region: oregon
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        # IMPORTANT: Replace with your MongoDB Atlas connection string
+        # Or use Render's managed MongoDB
+        value: ""
+      - key: JWT_SECRET
+        # IMPORTANT: Change this to a secure random string in Render dashboard
+        value: "change-me-to-secure-random-string"
+      - key: CLOUDINARY_CLOUD_NAME
+        value: ""
+      - key: CLOUDINARY_API_KEY
+        value: ""
+      - key: CLOUDINARY_API_SECRET
+        value: ""
+
+  # Static Site (Frontend) - Optional
+  # You can also host frontend on Netlify/Vercel for free
+  # - type: static
+  #   name: barterhub-frontend
+  #   buildCommand: echo "No build needed for static files"
+  #   staticPublishPath: .
+  #   envVars:
+  #     - key: API_URL
+  #       value: https://barterhub-backend.onrender.com
+

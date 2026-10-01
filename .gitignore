@@ -1,0 +1,59 @@
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production.local
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Uploads (temporary)
+uploads/
+temp/
+
+# Build outputs
+dist/
+build/
+out/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Editor backups
+*.swp
+*.swo
+*~
+.vscode/
+
+# Database
+mongodb/
+*.db
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.sublime-workspace
+
+# Misc
+TODO.md
+notes.txt
+.prettierrc

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - BarterHub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <i class="fas fa-exchange-alt"></i>
+        <span>BarterHub</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="profile.html" class="nav-link active">Profile</a>
+        <a href="upload.html" class="btn btn-primary">
+          <i class="fas fa-plus"></i> List Item
+        </a>
+        <a href="#" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Profile -->
+  <section class="profile-section">
+    <div class="container">
+      <div class="profile-card">
+        <div class="profile-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-info">
+          <h2 id="profileName">Loading...</h2>
+          <p id="profileEmail">Loading...</p>
+          <p class="profile-joined" id="profileJoined"></p>
+        </div>
+        <button class="btn btn-secondary" onclick="showEditProfile()">
+          <i class="fas fa-edit"></i> Edit Profile
+        </button>
+      </div>
+
+      <!-- Edit Profile Form -->
+      <div class="edit-profile" id="editProfile" style="display:none;">
+        <h3>Edit Profile</h3>
+        <form onsubmit="updateProfile(event)">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="editName" required>
+          </div>
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea id="editBio" rows="3" placeholder="Tell us about yourself..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="button" class="btn btn-secondary" onclick="hideEditProfile()">Cancel</button>
+        </form>
+      </div>
+
+      <!-- My Items -->
+      <div class="my-items">
+        <h3>My Items for Trade</h3>
+        <div class="items-grid" id="myItemsGrid"></div>
+        <div class="no-items" id="noMyItems">
+          <i class="fas fa-box-open"></i>
+          <p>You haven't listed any items yet</p>
+          <a href="upload.html" class="btn btn-primary">List Your First Item</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+

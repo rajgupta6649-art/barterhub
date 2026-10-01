@@ -1,0 +1,688 @@
+================================================================================
+                    BARTERHUB PROJECT - COMPLETE DOCUMENTATION
+                         For Teacher Presentation
+================================================================================
+
+WHAT IS BARTERHUB?
+------------------
+BarterHub is a web application that allows people to trade items with each 
+other without using money. Instead of buying and selling, users exchange items 
+they have for items they want. It's like online bartering!
+
+Example: If you have a book you don't want anymore, you can list it on 
+BarterHub and offer it in exchange for something else - maybe a video game 
+or a kitchen item you need.
+
+================================================================================
+                         PROJECT STRUCTURE OVERVIEW
+================================================================================
+
+The project is divided into two main parts:
+
+1. FRONTEND (What users see in their browser)
+   - index.html       - Main homepage showing all items
+   - login.html       - Login and registration page
+   - profile.html     - User profile page
+   - dashboard.html   - Trade requests management
+   - upload.html      - Form to list new items
+   - script.js        - All the interactive functionality
+   - api.js           - Connects to the backend
+   - style.css        - Visual design/styling
+
+2. BACKEND (Server-side, handles data processing)
+   - server.js        - Main server file
+   - controllers/    - Business logic
+   - models/         - Data structures
+   - routes/         - API endpoints
+   - middleware/     - Security/authentication
+
+================================================================================
+                         FRONTEND FILES EXPLAINED
+================================================================================
+
+------------------------------------------------------------------------------
+FILE: index.html (Homepage)
+------------------------------------------------------------------------------
+PURPOSE: This is the main landing page where users can see all items 
+         available for trade.
+
+WHAT IT CONTAINS:
+- Navigation bar (Logo, Home, Dashboard, Profile, List Item buttons)
+- Hero section (Welcome message and "Browse Items" button)
+- Search bar (Users can search for items)
+- Category dropdown (Filter by Electronics, Books, Clothing, etc.)
+- Items grid (Shows all available items as cards)
+
+HOW IT WORKS:
+1. When the page loads, JavaScript calls the API to fetch all items
+2. Items are displayed as cards with image, title, description
+3. Each card has an "Offer Trade" button
+4. Users can filter by typing in search box or selecting category
+5. If user is logged in, they see their name in navigation
+
+------------------------------------------------------------------------------
+FILE: login.html (Authentication)
+------------------------------------------------------------------------------
+PURPOSE: Allows users to create an account or login to existing account.
+
+WHAT IT CONTAINS:
+- Logo at top
+- Two tabs: "Login" and "Register"
+- Login form: Email + Password fields
+- Register form: Name + Email + Password + Confirm Password
+
+HOW IT WORKS:
+1. User can switch between Login and Register tabs
+2. Registration validates all fields are filled
+3. Login checks email/password against database
+4. On success, user gets a "token" (like a digital ID card)
+5. This token is stored in browser and used for future requests
+
+------------------------------------------------------------------------------
+FILE: profile.html (User Profile)
+------------------------------------------------------------------------------
+PURPOSE: Shows user's personal information and their listed items.
+
+WHAT IT CONTAINS:
+- User avatar (default person icon)
+- User name and email
+- Join date (when account was created)
+- "Edit Profile" button
+- "My Items for Trade" section
+
+HOW IT WORKS:
+1. Page loads and fetches user profile data from API
+2. Displays user's name, email, and join date
+3. Shows all items the user has listed
+4. Edit button opens a form to change name/bio
+5. Shows empty state if user has no items yet
+
+------------------------------------------------------------------------------
+FILE: dashboard.html (Trade Management)
+------------------------------------------------------------------------------
+PURPOSE: Central hub for managing trade requests.
+
+WHAT IT CONTAINS:
+- Two tabs: "Trade Requests" and "My Offers"
+- List of received trade requests
+- List of sent trade offers
+- Accept/Decline buttons for incoming trades
+
+HOW IT WORKS:
+1. Shows trades where user is the item owner (requests received)
+2. Shows trades where user requested items (offers sent)
+3. Each trade shows: Item name, Offered item, Other user, Status
+4. Status can be: Pending (waiting), Accepted, or Declined
+5. Owner can Accept or Decline incoming requests
+
+------------------------------------------------------------------------------
+FILE: upload.html (List New Item)
+------------------------------------------------------------------------------
+PURPOSE: Form to add a new item for trade.
+
+WHAT IT CONTAINS:
+- Item Title field
+- Category dropdown (Electronics, Books, Clothing, Home, Sports, Other)
+- Description textarea (detailed description of item)
+- Condition dropdown (New, Like New, Good, Fair)
+- Image upload area (drag & drop or click to upload)
+- Alternative: Image URL input
+- "What are you looking for?" field (what user wants in exchange)
+
+HOW IT WORKS:
+1. User fills out all required fields
+2. Can upload image from computer OR use image URL
+3. Click "List Item" button
+4. Data sent to backend API
+5. Item appears on homepage for others to see
+
+------------------------------------------------------------------------------
+FILE: script.js (Main JavaScript)
+------------------------------------------------------------------------------
+PURPOSE: Contains all the interactive functionality for the website.
+
+KEY FUNCTIONS:
+
+1. updateNav()
+   - Checks if user is logged in
+   - Shows/hides navigation links accordingly
+   - Logged in: shows Profile, Logout, List Item
+   - Logged out: shows Login
+
+2. handleLogin(event)
+   - Gets email/password from form
+   - Calls API to authenticate
+   - Stores user ID in localStorage for later use
+   - Redirects to homepage on success
+
+3. handleRegister(event)
+   - Gets name/email/password from form
+   - Calls API to create new account
+   - Shows success message
+
+4. loadItems()
+   - Fetches all items from API
+   - Calls displayItems() to show them
+
+5. displayItems(items)
+   - Takes array of items
+   - Creates HTML for each item card
+   - Adds them to the items grid on page
+
+6. createItemCard(item)
+   - Creates HTML for a single item card
+   - Shows image, title, description, owner name
+   - Shows "Offer Trade" button
+   - Shows "Delete" button if current user owns the item
+
+7. deleteItem(itemId)
+   - Deletes an item user owns
+   - Shows confirmation dialog first
+   - Refreshes item list after deletion
+
+8. loadProfile()
+   - Fetches user profile data
+   - Updates the profile page with name, email
+   - Loads user's own items
+
+9. updateProfile(event)
+   - Sends updated name/bio to server
+   - Shows success message
+
+10. loadTrades()
+    - Fetches all trade requests
+    - Displays them in dashboard
+
+------------------------------------------------------------------------------
+FILE: api.js (API Service)
+------------------------------------------------------------------------------
+PURPOSE: Central place that handles all communication with the backend server.
+
+CLASS: ApiService
+
+This file contains a class with methods that connect to the backend:
+
+- register(name, email, password) - Create new account
+- login(email, password) - Sign in
+- getItems() - Fetch all items
+- getItem(id) - Fetch single item
+- createItem(data, image) - Add new item
+- updateItem(id, data) - Modify item
+- deleteItem(id) - Remove item
+- getProfile() - Get current user profile
+- updateProfile(data) - Update user info
+- createTrade(itemId, offeredItem) - Send trade offer
+- getTrades() - Get all trades
+
+The API URL is set to: https://barterhub-g3vp.onrender.com/api
+(This connects to the production backend server)
+
+------------------------------------------------------------------------------
+FILE: style.css (Styling)
+------------------------------------------------------------------------------
+PURPOSE: Makes the website look beautiful and modern.
+
+KEY STYLES:
+
+- Color Scheme: Blue primary (#2563eb), white backgrounds
+- Modern cards with shadows and rounded corners
+- Smooth hover animations on buttons and items
+- Responsive design (works on mobile and desktop)
+- Grid layout for items (automatically adjusts)
+- Clean forms with focus effects
+
+================================================================================
+                         BACKEND FILES EXPLAINED
+================================================================================
+
+------------------------------------------------------------------------------
+FILE: backend/server.js (Main Server)
+------------------------------------------------------------------------------
+PURPOSE: The main entry point that starts the web server.
+
+WHAT IT DOES:
+- Sets up Express.js web framework
+- Connects to MongoDB database
+- Sets up all API routes
+- Starts listening on port 3000
+
+------------------------------------------------------------------------------
+FILE: backend/models/User.js (User Data Model)
+------------------------------------------------------------------------------
+PURPOSE: Defines what a "User" looks like in the database.
+
+USER FIELDS:
+- name: User's display name (required)
+- email: User's email (required, unique)
+- password: User's password (required, encrypted)
+- phone: Phone number (optional)
+- location: City, state, zip code (optional)
+- bio: Short biography (optional, max 500 chars)
+- avatar: Profile picture URL
+- role: 'user' or 'admin'
+- status: 'active', 'suspended', or 'deleted'
+- stats: itemsListed, tradesCompleted, rating
+- preferences: Notification settings
+- createdAt/updatedAt: Timestamps
+
+------------------------------------------------------------------------------
+FILE: backend/models/Item.js (Item Data Model)
+------------------------------------------------------------------------------
+PURPOSE: Defines what an "Item" looks like in the database.
+
+ITEM FIELDS:
+- title: Item name (required)
+- description: Detailed description (required)
+- category: electronics, books, clothing, home, sports, other
+- condition: new, like-new, good, fair, poor
+- images: Array of image URLs
+- owner: Reference to User who listed it (required)
+- preferredTrades: What user wants in exchange
+- location: Where the item is located
+- status: available, pending-trade, traded, delisted
+- views: Number of times item was viewed
+- likes: Users who liked this item
+- tags: Search keywords
+
+------------------------------------------------------------------------------
+FILE: backend/controllers/authController.js (Authentication Logic)
+------------------------------------------------------------------------------
+PURPOSE: Handles all authentication-related operations.
+
+FUNCTIONS:
+
+1. register(req, res)
+   - Receives: name, email, password, confirmPassword
+   - Validates all fields provided
+   - Checks if email already exists
+   - Creates new user in database
+   - Returns JWT token for automatic login
+
+2. login(req, res)
+   - Receives: email, password
+   - Finds user by email
+   - Verifies password (compares encrypted)
+   - Checks if account is active
+   - Returns JWT token
+
+3. getCurrentUser(req, res)
+   - Uses the token to identify user
+   - Returns current user's data
+
+------------------------------------------------------------------------------
+FILE: backend/controllers/userController.js (User Management)
+------------------------------------------------------------------------------
+PURPOSE: Handles user profile operations.
+
+FUNCTIONS:
+
+1. getMyProfile(req, res)
+   - Gets current user's full profile
+   - Also fetches their listed items
+   - Returns user data + their items
+
+2. updateProfile(req, res)
+   - Receives: name, phone, bio, location
+   - Updates user record in database
+   - Returns updated user
+
+3. getAllUsers(req, res)
+   - Admin function to get all users
+   - Supports pagination
+
+------------------------------------------------------------------------------
+FILE: backend/controllers/itemController.js (Item Management)
+------------------------------------------------------------------------------
+PURPOSE: Handles all item-related operations.
+
+FUNCTIONS:
+
+1. createItem(req, res)
+   - Receives: title, description, category, condition, etc.
+   - Associates item with current user (owner)
+   - Saves to database
+   - Returns created item
+
+2. getAllItems(req, res)
+   - Supports filtering by category, condition, search
+   - Pagination support
+   - Returns items with owner info populated
+
+3. getItemById(req, res)
+   - Gets single item by ID
+   - Increments view count
+   - Returns item with full owner details
+
+4. updateItem(req, res)
+   - Allows owner or admin to update
+   - Validates ownership
+
+5. deleteItem(req, res)
+   - Allows owner or admin to delete
+   - Validates ownership
+   - Removes from database
+
+6. toggleLike(req, res)
+   - User can like/unlike an item
+   - Adds to their wishlist
+
+------------------------------------------------------------------------------
+FILE: backend/routes/items.js (Item API Routes)
+------------------------------------------------------------------------------
+PURPOSE: Defines all item-related URLs (endpoints).
+
+ROUTES:
+- GET /api/items         - Get all items (public)
+- GET /api/items/:id     - Get single item (public)
+- POST /api/items        - Create new item (requires login)
+- PUT /api/items/:id     - Update item (requires login, owner only)
+- DELETE /api/items/:id   - Delete item (requires login, owner only)
+- POST /api/items/:id/like - Like item (requires login)
+- GET /api/items/user/my-items - Get current user's items
+
+------------------------------------------------------------------------------
+FILE: backend/middleware/auth.js (Security)
+------------------------------------------------------------------------------
+PURPOSE: Protects certain routes - ensures only logged-in users can access.
+
+WHAT IT DOES:
+- Checks for JWT token in request header
+- Verifies token is valid
+- Adds user info to request object
+- Returns 401 if not authenticated
+
+================================================================================
+                         HOW THE APPLICATION WORKS
+================================================================================
+
+SCENARIO 1: User Registration and Login
+--------------------------------------
+1. User opens login.html
+2. Clicks "Register" tab
+3. Fills in: Name, Email, Password
+4. Clicks "Register" button
+5. script.js calls api.register()
+6. api.js sends request to backend /auth/register
+7. authController creates user in MongoDB
+8. Returns success + JWT token
+9. Token stored in localStorage
+10. User can now access protected features
+
+SCENARIO 2: Listing an Item for Trade
+-------------------------------------
+1. User clicks "List Item" in navigation
+2. If not logged in, redirected to login
+3. User fills form in upload.html
+4. Clicks "List Item"
+5. script.js calls api.createItem()
+6. api.js sends data to backend /items
+7. itemController creates item with owner = current user
+8. Returns success
+9. User redirected to homepage
+10. New item now appears in items grid
+
+SCENARIO 3: Offering a Trade
+----------------------------
+1. User browses items on index.html
+2. Clicks "Offer Trade" on an item
+3. Prompt appears asking "What item are you offering?"
+4. User types their offer
+5. script.js calls api.createTrade()
+6. Backend creates trade record
+7. Trade appears in dashboard of both users
+
+SCENARIO 4: Accepting a Trade
+-----------------------------
+1. Item owner goes to dashboard.html
+2. Sees trade request in "Trade Requests"
+3. Clicks "Accept" button
+4. Backend updates trade status to "accepted"
+5. Item status changes to "traded"
+6. Both users notified
+
+================================================================================
+                         DATA FLOW DIAGRAM
+================================================================================
+
+BROWSER (Frontend)                    SERVER (Backend)                   DATABASE
+     |                                      |                               |
+     |  1. Request items                   |                               |
+     |------------------------------------>|  2. Query MongoDB             |
+     |                                      |------------------------------>|
+     |                                      |                               |
+     |                                      |  3. Return items             |
+     |<------------------------------------|                               |
+     |                                      |                               |
+     |  4. Display items                   |                               |
+     |======================================|                               |
+     |                                      |                               |
+     |                                      |                               |
+     |  5. User clicks "Offer Trade"       |                               |
+     |------------------------------------>|                               |
+     |                                      |  6. Create trade record      |
+     |                                      |------------------------------>|
+     |                                      |                               |
+     |                                      |  7. Return success           |
+     |<------------------------------------|                               |
+     |                                      |                               |
+     |  8. Show success message            |                               |
+     |======================================|                               |
+
+================================================================================
+                         TECHNOLOGY STACK
+================================================================================
+
+FRONTEND:
+- HTML5 - Structure
+- CSS3 - Styling (Modern, responsive)
+- JavaScript (ES6+) - Interactivity
+- Font Awesome - Icons
+- LocalStorage - Store user session
+
+BACKEND:
+- Node.js - JavaScript runtime
+- Express.js - Web framework
+- MongoDB - NoSQL database
+- Mongoose - MongoDB helper library
+- JSON Web Tokens (JWT) - Authentication
+- bcryptjs - Password encryption
+
+================================================================================
+                         KEY FEATURES
+================================================================================
+
+1. USER AUTHENTICATION
+   - Secure registration and login
+   - JWT-based session management
+   - Passwords encrypted with bcrypt
+
+2. ITEM MANAGEMENT
+   - List items with photos and descriptions
+   - Categorize items
+   - Search and filter
+   - Edit and delete own items
+
+3. TRADE SYSTEM
+   - Send trade offers
+   - Accept/Decline offers
+   - Track trade status
+
+4. USER PROFILES
+   - View and edit profile
+   - See member since date
+   - Track listed items
+
+5. MODERN UI
+   - Clean, responsive design
+   - Smooth animations
+   - Works on mobile devices
+
+================================================================================
+                         FILE RELATIONSHIPS
+================================================================================
+
+                    +------------------+
+                    |   index.html     |
+                    |  (Homepage)      |
+                    +--------+---------+
+                             |
+                    +--------v---------+
+                    |    script.js    |
+                    | (Logic/Business)|
+                    +--------+---------+
+                             |
+                    +--------v---------+
+                    |     api.js     API Service)    |
+                    +--------+---------+
+                             |
+              +--------------+--------------+
+              |              |              |
+                    | ( |
+     +--------v-------+     |     +--------v--------+
+     | backend/server |     |     |   MongoDB       |
+     | (Express)      |     |     |   (Database)    |
+     +--------+-------+     |     +-----------------+
+              |
+     +--------v---------+
+     |   controllers/   |
+     | (Business Logic) |
+     +--------+--------+
+              |
+     +--------v---------+
+     |    models/       |
+     | (Data Schema)    |
+     +------------------+
+
+================================================================================
+                         CONCLUSION
+================================================================================
+
+BarterHub is a full-stack web application that enables peer-to-peer trading.
+It uses modern web technologies (HTML, CSS, JavaScript) on the frontend and
+Node.js with MongoDB on the backend. The application handles user 
+authentication, item listings, trade offers, and profile management in a 
+secure and user-friendly manner.
+
+This project demonstrates:
+- Full CRUD operations (Create, Read, Update, Delete)
+- RESTful API design
+- User authentication and authorization
+- Database modeling
+- Responsive web design
+- Asynchronous data handling
+
+================================================================================
+                         DEPLOYMENT INFORMATION
+================================================================================
+
+The BarterHub application is now deployed and accessible from any device!
+
+LIVE URLs:
+-----------
+- Frontend (GitHub Pages): https://shubham6853.github.io/BarterHub/
+- Backend API (Render): https://barterhub-g3vp.onrender.com
+
+DEPLOYMENT ARCHITECTURE:
+------------------------
+The application uses a split deployment model:
+
+1. FRONTEND (GitHub Pages)
+   - Static HTML, CSS, JavaScript files
+   - Hosted on GitHub repository
+   - Accessible at: https://shubham6853.github.io/BarterHub/
+
+2. BACKEND (Render)
+   - Node.js + Express server
+   - Hosted on Render's free tier
+   - Accessible at: https://barterhub-g3vp.onrender.com
+
+3. DATABASE (MongoDB Atlas)
+   - Cloud MongoDB database
+   - Free M0 cluster
+   - Hosted on AWS Mumbai region
+
+API CONFIGURATION:
+-----------------
+The frontend is configured to communicate with the production backend:
+- API Base URL: https://barterhub-g3vp.onrender.com/api
+- This is set in the api.js file
+
+HOW TO ACCESS FROM ANY DEVICE:
+------------------------------
+Simply open https://shubham6853.github.io/BarterHub/ in any web browser.
+The app works on:
+- Desktop computers
+- Laptops
+- Tablets
+- Smartphones (iOS and Android)
+
+================================================================================
+                         MONGODB ATLAS SETUP
+================================================================================
+
+DATABASE CONFIGURATION:
+----------------------
+- Service: MongoDB Atlas
+- Cluster Name: BarterHub
+- Cloud Provider: AWS
+- Region: Mumbai (ap-south-1)
+- Cluster Tier: M0 Free (Free forever)
+- Database Name: barterhub
+
+CONNECTION STRING:
+------------------
+The backend connects to MongoDB using:
+mongodb+srv://guptag2005a_db_user:***@barterhub.i5qaqsg.mongodb.net/barterhub?retryWrites=true&w=majority
+
+SECURITY SETTINGS:
+-----------------
+- IP Access: 0.0.0.0/0 (Allow access from anywhere)
+- Authentication: SCRAM
+- User Role: atlasAdmin@admin
+
+================================================================================
+                         SECURITY UPDATES
+================================================================================
+
+GITHUB SECURITY FIX:
+-------------------
+Fixed exposed MongoDB credentials that were detected by GitHub:
+
+1. Removed exposed credentials from Git tracking:
+   - backend/.env.example
+   - backend/.env.production
+
+2. Updated files with safe placeholder values
+
+3. Files now contain template values like:
+   - username: placeholder
+   - password: placeholder
+   - cluster: placeholder.mongodb.net
+
+IMPORTANT SECURITY RECOMMENDATIONS:
+----------------------------------
+1. Rotate MongoDB Atlas password periodically
+2. Consider using BFG Repo-Cleaner to remove credentials from Git history
+3. Never commit actual credentials to GitHub
+4. Use environment variables for sensitive data
+
+================================================================================
+
+                         BUG FIXES SUMMARY (2024)
+================================================================================
+
+FIX 1: \"Product not found\" on Offer Trade
+- Issue: Frontend sent {requestedItemId} but backend expected {itemId}
+- Fixed: api.js createTrade body → {itemId, offeredItem}
+- Added: Frontend validation api.getItem() before offer
+
+FIX 2: Images not showing in marketplace
+- Issue: No file upload; JSON only, no Cloudinary middleware
+- Fixed: backend/server.js + multer.single('image') on POST /items
+- Fixed: api.js createItem uses FormData for files → Cloudinary
+- Result: Images upload & display properly
+
+Deployment: Push to main → Render auto-deploys backend.
+
+================================================================================
+

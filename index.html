@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BarterHub - Trade What You Have</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <i class="fas fa-exchange-alt"></i>
+        <span>BarterHub</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="profile.html" class="nav-link" id="profileLink" style="display:none;">Profile</a>
+        <a href="upload.html" class="btn btn-primary" id="uploadLink">
+          <i class="fas fa-plus"></i> List Item
+        </a>
+        <a href="login.html" class="nav-link" id="loginLink">Login</a>
+        <a href="#" class="nav-link" id="logoutLink" style="display:none;" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Trade What You Have for What You Need</h1>
+      <p>Join thousands of people exchanging items. No money, just fair trades!</p>
+      <button class="btn btn-light" onclick="document.getElementById('items').scrollIntoView()">Browse Items</button>
+    </div>
+  </section>
+
+  <!-- Filter Section -->
+  <section class="filters">
+    <div class="container">
+      <input type="text" id="searchInput" placeholder="Search items..." onkeyup="filterItems()">
+      <select id="categoryFilter" onchange="filterItems()">
+        <option value="">All Categories</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Books">Books</option>
+        <option value="Clothing">Clothing</option>
+        <option value="Home">Home</option>
+        <option value="Sports">Sports</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- Items Grid -->
+  <section class="items-section" id="items">
+    <div class="container">
+      <h2>Available Items</h2>
+      <div class="items-grid" id="itemsGrid">
+        <!-- Items loaded by JavaScript -->
+      </div>
+      <div class="no-items" id="noItems" style="display:none;">
+        <i class="fas fa-box-open"></i>
+        <p>No items found. Be the first to list one!</p>
+        <a href="upload.html" class="btn btn-primary">List Item</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 BarterHub. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+

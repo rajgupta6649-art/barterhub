@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List Item - BarterHub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Upload Page Specific Styles */
+    .upload-section {
+      padding: 40px 0;
+      min-height: calc(100vh - 80px);
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    }
+
+    .upload-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .upload-card h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: var(--dark);
+    }
+
+    .upload-card > p {
+      color: var(--secondary);
+      margin-bottom: 30px;
+    }
+
+    .upload-card .form-group {
+      margin-bottom: 24px;
+    }
+
+    .upload-card .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--dark);
+    }
+
+    .upload-card .form-group input,
+    .upload-card .form-group select,
+    .upload-card .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: #fafbfc;
+    }
+
+    .upload-card .form-group input:focus,
+    .upload-card .form-group select:focus,
+    .upload-card .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Image Upload Area */
+    .image-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #fafbfc;
+      position: relative;
+    }
+
+    .image-upload-area:hover,
+    .image-upload-area.dragover {
+      border-color: var(--primary);
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    .image-upload-area input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-icon {
+      font-size: 40px;
+      color: var(--secondary);
+      margin-bottom: 12px;
+    }
+
+    .upload-text {
+      color: var(--secondary);
+      font-size: 14px;
+    }
+
+    .upload-text strong {
+      color: var(--primary);
+    }
+
+    .upload-hint {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+
+    /* Image Preview */
+    .image-preview-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .image-preview-container.active {
+      display: block;
+    }
+
+    .image-preview {
+      position: relative;
+      display: inline-block;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-preview img {
+      max-width: 250px;
+      max-height: 250px;
+      display: block;
+      object-fit: cover;
+    }
+
+    .image-preview .remove-image {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .image-preview .remove-image:hover {
+      background: var(--danger);
+      transform: scale(1.1);
+    }
+
+    /* URL Fallback */
+    .url-fallback {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+    }
+
+    .url-fallback-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--secondary);
+      cursor: pointer;
+    }
+
+    .url-fallback-toggle input {
+      width: auto;
+    }
+
+    .url-input-container {
+      display: none;
+      margin-top: 12px;
+    }
+
+    .url-input-container.active {
+      display: block;
+    }
+
+    /* Submit Button */
+    .upload-card .btn-primary {
+      padding: 16px 32px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .upload-card .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Loading Spinner */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 15px;
+      color: var(--secondary);
+      font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .upload-card {
+        padding: 25px;
+        margin: 0 15px;
+      }
+
+      .image-preview img {
+        max-width: 100%;
+        max-height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <i class="fas fa-exchange-alt"></i>
+        <span>BarterHub</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+        <a href="upload.html" class="nav-link active">
+          <i class="fas fa-plus"></i> List Item
+        </a>
+        <a href="#" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Upload Form -->
+  <section class="upload-section">
+    <div class="container">
+      <div class="upload-card">
+        <h1>List Your Item</h1>
+        <p>Describe what you want to trade and upload photos</p>
+        
+        <form onsubmit="handleUpload(event)" id="uploadForm">
+          <div class="form-group">
+            <label>Item Title *</label>
+            <input type="text" id="itemTitle" placeholder="What are you offering?" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="itemCategory" required>
+              <option value="">Select a category</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Books">Books</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Home">Home</option>
+              <option value="Sports">Sports</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Description *</label>
+            <textarea id="itemDescription" rows="4" placeholder="Describe your item in detail, including any flaws or special features..." required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>Condition</label>
+            <select id="itemCondition">
+              <option value="new">New - Brand new, never used</option>
+              <option value="like-new">Like New - Used once or twice</option>
+              <option value="good" selected>Good - Normal wear and tear</option>
+              <option value="fair">Fair - Shows signs of use</option>
+            </select>
+          </div>
+          
+          <!-- Image Upload -->
+          <div class="form-group">
+            <label>Item Image (optional)</label>
+            <div class="image-upload-area" id="uploadArea">
+              <input type="file" id="itemImage" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" onchange="handleImageSelect(event)">
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <div class="upload-text">
+                <strong>Click to upload</strong> or drag and drop
+              </div>
+              <div class="upload-hint">
+                Max 5MB • JPEG, PNG, GIF, WebP
+              </div>
+            </div>
+            
+            <!-- Image Preview -->
+            <div class="image-preview-container" id="imagePreviewContainer">
+              <div class="image-preview">
+                <img id="imagePreview" src="" alt="Preview">
+                <button type="button" class="remove-image" onclick="removeImage()">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- URL Fallback -->
+            <div class="url-fallback">
+              <label class="url-fallback-toggle">
+                <input type="checkbox" id="useUrlFallback" onchange="toggleUrlFallback()">
+                <span>Or use an image URL instead</span>
+              </label>
+              <div class="url-input-container" id="urlInputContainer">
+                <input type="url" id="itemImageUrl" placeholder="https://example.com/image.jpg">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>What are you looking for? *</label>
+            <input type="text" id="itemLookingFor" placeholder="What do you want in exchange?" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+            <i class="fas fa-plus"></i> List Item
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div style="text-align: center;">
+      <div class="spinner"></div>
+      <div class="loading-text">Uploading your item...</div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script>
+    let selectedFile = null;
+
+    // Handle image selection
+    function handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        event.target.value = '';
+        return;
+      }
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Only JPEG, PNG, GIF, and WebP images are allowed');
+        event.target.value = '';
+        return;
+      }
+
+      selectedFile = file;
+      
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('imagePreviewContainer').classList.add('active');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Remove selected image
+    function removeImage() {
+      selectedFile = null;
+      document.getElementById('itemImage').value = '';
+      document.getElementById('imagePreview').src = '';
+      document.getElementById('imagePreviewContainer').classList.remove('active');
+    }
+
+    // Toggle URL fallback
+    function toggleUrlFallback() {
+      const useUrl = document.getElementById('useUrlFallback').checked;
+      const urlContainer = document.getElementById('urlInputContainer');
+      const uploadArea = document.getElementById('uploadArea');
+      
+      if (useUrl) {
+        urlContainer.classList.add('active');
+        uploadArea.style.display = 'none';
+        removeImage();
+      } else {
+        urlContainer.classList.remove('active');
+        uploadArea.style.display = 'block';
+      }
+    }
+
+    // Drag and drop handlers
+    const uploadArea = document.getElementById('uploadArea');
+    
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const fileInput = document.getElementById('itemImage');
+        fileInput.files = files;
+        handleImageSelect({ target: fileInput });
+      }
+    });
+
+    // Handle form submission
+    async function handleUpload(event) {
+      event.preventDefault();
+      
+      if (!checkAuth()) return;
+
+      const submitBtn = document.getElementById('submitBtn');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      
+      // Show loading
+      submitBtn.disabled = true;
+      loadingOverlay.classList.add('active');
+
+      try {
+        const itemData = {
+          title: document.getElementById('itemTitle').value,
+          category: document.getElementById('itemCategory').value,
+          description: document.getElementById('itemDescription').value,
+          condition: document.getElementById('itemCondition').value,
+          lookingFor: document.getElementById('itemLookingFor').value
+        };
+
+        // Check if using URL fallback
+        const useUrl = document.getElementById('useUrlFallback').checked;
+        let imageFile = null;
+        
+        if (!useUrl && selectedFile) {
+          imageFile = selectedFile;
+        } else if (useUrl) {
+          itemData.imageUrl = document.getElementById('itemImageUrl').value;
+        }
+
+        await api.createItem(itemData, imageFile);
+        
+        alert('Item listed successfully!');
+        window.location.href = 'index.html';
+      } catch (error) {
+        alert(error.message || 'Failed to upload item. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        loadingOverlay.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+</html>
+

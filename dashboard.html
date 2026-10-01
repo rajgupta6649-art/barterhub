@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - BarterHub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <i class="fas fa-exchange-alt"></i>
+        <span>BarterHub</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+        <a href="upload.html" class="btn btn-primary">
+          <i class="fas fa-plus"></i> List Item
+        </a>
+        <a href="#" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Dashboard -->
+  <section class="dashboard">
+    <div class="container">
+      <h1>My Dashboard</h1>
+      
+      <div class="dashboard-tabs">
+        <button class="tab-btn active" onclick="showTab('received')">Trade Requests</button>
+        <button class="tab-btn" onclick="showTab('sent')">My Offers</button>
+      </div>
+
+      <!-- Received Trades -->
+      <div id="receivedTrades" class="trades-list">
+        <h3>Trade Requests Received</h3>
+        <div id="receivedList"></div>
+      </div>
+
+      <!-- Sent Trades -->
+      <div id="sentTrades" class="trades-list" style="display:none;">
+        <h3>My Trade Offers</h3>
+        <div id="sentList"></div>
+      </div>
+
+      <div class="no-trades" id="noTrades">
+        <i class="fas fa-exchange-alt"></i>
+        <p>No trade requests yet</p>
+      </div>
+    </div>
+  </section>
+
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+  <script>
+    function showTab(tab) {
+      document.getElementById('receivedTrades').style.display = tab === 'received' ? 'block' : 'none';
+      document.getElementById('sentTrades').style.display = tab === 'sent' ? 'block' : 'none';
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && tab === 'received') || (i === 1 && tab === 'sent'));
+      });
+    }
+  </script>
+</body>
+</html>
+
